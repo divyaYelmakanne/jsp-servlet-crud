@@ -16,7 +16,7 @@ public class UserDAO {
     // SQL QUERIES
     // =========================================================
 
-    // PostgreSQL table name is userss
+    // PostgreSQL table name
     private static final String INSERT_USERS_SQL =
             "INSERT INTO userss (name, email, country) VALUES (?, ?, ?)";
 
@@ -52,38 +52,56 @@ public class UserDAO {
             // Load PostgreSQL JDBC Driver
             Class.forName("org.postgresql.Driver");
 
-            // Get Railway PostgreSQL environment variables
+            // Get Railway PostgreSQL variables
             String url = System.getenv("DATABASE_URL");
             String username = System.getenv("PGUSER");
             String password = System.getenv("PGPASSWORD");
 
-            // Check if DATABASE_URL exists
+            // DEBUG INFORMATION
+            System.out.println("===== DATABASE DEBUG =====");
+            System.out.println("URL exists: " + (url != null));
+            System.out.println("USER exists: " + (username != null));
+            System.out.println("PASSWORD exists: " + (password != null));
+
+            // Check environment variables
             if (url == null || url.trim().isEmpty()) {
                 throw new SQLException(
                         "DATABASE_URL environment variable is missing"
                 );
             }
 
+            if (username == null || username.trim().isEmpty()) {
+                throw new SQLException(
+                        "PGUSER environment variable is missing"
+                );
+            }
+
+            if (password == null || password.trim().isEmpty()) {
+                throw new SQLException(
+                        "PGPASSWORD environment variable is missing"
+                );
+            }
+
             // Railway may provide:
             // postgresql://...
             //
-            // JDBC driver requires:
+            // JDBC requires:
             // jdbc:postgresql://...
+
             if (url.startsWith("postgresql://")) {
                 url = "jdbc:" + url;
             }
 
-            System.out.println("DATABASE URL: " + url);
-            System.out.println("DATABASE USER: " + username);
+            System.out.println("Connecting to PostgreSQL...");
 
-            // Create database connection
+            // Create connection
             Connection connection = DriverManager.getConnection(
                     url,
                     username,
                     password
             );
 
-            System.out.println("DATABASE CONNECTED SUCCESSFULLY!");
+            System.out.println("===== DATABASE CONNECTED SUCCESSFULLY =====");
 
             return connection;
 
@@ -104,9 +122,9 @@ public class UserDAO {
     public void insertUser(User user) throws SQLException {
 
         try (
-            Connection connection = getConnection();
-            PreparedStatement preparedStatement =
-                    connection.prepareStatement(INSERT_USERS_SQL)
+                Connection connection = getConnection();
+                PreparedStatement preparedStatement =
+                        connection.prepareStatement(INSERT_USERS_SQL)
         ) {
 
             System.out.println(
@@ -152,9 +170,9 @@ public class UserDAO {
         User user = null;
 
         try (
-            Connection connection = getConnection();
-            PreparedStatement preparedStatement =
-                    connection.prepareStatement(SELECT_USER_BY_ID)
+                Connection connection = getConnection();
+                PreparedStatement preparedStatement =
+                        connection.prepareStatement(SELECT_USER_BY_ID)
         ) {
 
             preparedStatement.setInt(1, id);
@@ -193,13 +211,13 @@ public class UserDAO {
         List<User> users = new ArrayList<>();
 
         try (
-            Connection connection = getConnection();
+                Connection connection = getConnection();
 
-            PreparedStatement preparedStatement =
-                    connection.prepareStatement(SELECT_ALL_USERS);
+                PreparedStatement preparedStatement =
+                        connection.prepareStatement(SELECT_ALL_USERS);
 
-            ResultSet rs =
-                    preparedStatement.executeQuery()
+                ResultSet rs =
+                        preparedStatement.executeQuery()
         ) {
 
             while (rs.next()) {
@@ -247,17 +265,16 @@ public class UserDAO {
         boolean rowDeleted;
 
         try (
-            Connection connection = getConnection();
+                Connection connection = getConnection();
 
-            PreparedStatement statement =
-                    connection.prepareStatement(DELETE_USERS_SQL)
+                PreparedStatement statement =
+                        connection.prepareStatement(DELETE_USERS_SQL)
         ) {
 
             statement.setInt(1, id);
 
             rowDeleted =
                     statement.executeUpdate() > 0;
-
         }
 
         return rowDeleted;
@@ -273,10 +290,10 @@ public class UserDAO {
         boolean rowUpdated;
 
         try (
-            Connection connection = getConnection();
+                Connection connection = getConnection();
 
-            PreparedStatement statement =
-                    connection.prepareStatement(UPDATE_USERS_SQL)
+                PreparedStatement statement =
+                        connection.prepareStatement(UPDATE_USERS_SQL)
         ) {
 
             statement.setString(
