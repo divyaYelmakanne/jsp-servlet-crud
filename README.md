@@ -9,7 +9,7 @@ This application allows users to be added, viewed, edited, deleted, searched, an
 ## 🚀 Live Demo
 
 🌐 **Deployed Application:** 
-jsp-servlet-crud-production.up.railway.app
+[Open User Management App](jsp-servlet-crud-production.up.railway.app)
 
 ---
 
